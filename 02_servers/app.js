@@ -1,21 +1,27 @@
 const express = require('express');
 
-// set up an express up
-// invoke the express to create an instance of the express app
 const app = express();
 
 // register view engine
 app.set('view engine', 'ejs');
-// for setting ejs and express to look into another folder than the default /views
-// app.set('views', 'my-views')
 
 // listen for requests
-// it infers that we are using localhosts
 app.listen(3000);
+
+// create a logger middleware
+app.use((req, res, next) => {
+    console.log('new request made:');
+    console.log('host: ', req.hostname);
+    console.log('path: ', req.path);
+    console.log('method: ', req.method);
+    // when express gets to this point, doesn t know where to go next
+    // it is not aware of the next middleware
+    // with the function next we are signaling htat we are not sending an answer in this middleware
+    next();
+});
 
 // respond to requests
 app.get('/', (req, res) => {
-    // render the file with ejs view engine and send it back to the browser
     const blogs = [
         {title: 'Yoshi finds eggs', snippet: 'Lorem ipsum dolor sit amet consectetur'},
         {title: 'Mario finds stars', snippet: 'Lorem ipsum dolor sit amet consectetur'},
@@ -24,27 +30,17 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'HOME', blogs });
 });
 
-app.get('/about', (req, res) => {
-    res.render('about', { title: 'ABOUT' });
+app.use((req, res, next) => {
+    console.log('in the next middlware');
+    next();
 });
 
 app.get('/blogs/create', (req, res) => {
     res.render('create', { title: 'CREATE BLOG' });
 });
 
-// 404 page
-// use -> method to fire middleware and use middleware in express
-// use function is fired each time a request is sent
-// but only if it gets to this point
-// the express behavior is that express is running the app.js code top to bottom
-// and it s looking for matches through out the gets 
-// trying to find the url
-// if by this point, no match was found, it will use this 
-// THE POSITION OF THIS CODE IS ESSENTIAL
-// if a response is sent to the browser, the code won t be carried on with
 app.use((req, res) => {
     res
-        // manually set the status code
         .status(404)
         .render('404', { title: '404' });
 });
