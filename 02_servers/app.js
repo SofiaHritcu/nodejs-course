@@ -4,33 +4,32 @@ const express = require('express');
 // invoke the express to create an instance of the express app
 const app = express();
 
+// register view engine
+app.set('view engine', 'ejs');
+// for setting ejs and express to look into another folder than the default /views
+// app.set('views', 'my-views')
+
 // listen for requests
 // it infers that we are using localhosts
 app.listen(3000);
 
 // respond to requests
 app.get('/', (req, res) => {
-    // the method infers the type of content that is being sent
-    // also it infers the status code
-    // res.send('<p>home page</p>');
-
-    // looks for an absolute path
-    res.sendFile('./views/index.html', { root: __dirname});
+    // render the file with ejs view engine and send it back to the browser
+    const blogs = [
+        {title: 'Yoshi finds eggs', snippet: 'Lorem ipsum dolor sit amet consectetur'},
+        {title: 'Mario finds stars', snippet: 'Lorem ipsum dolor sit amet consectetur'},
+        {title: 'How to defeat bowser', snippet: 'Lorem ipsum dolor sit amet consectetur'},
+    ];
+    res.render('index', { title: 'HOME', blogs });
 });
 
 app.get('/about', (req, res) => {
-    // the method infers the type of content that is being sent
-    // also it infers the status code
-    // res.send('<p>about page</p>');
-
-    // looks for an absolute path
-    res.sendFile('./views/about.html', { root: __dirname});
+    res.render('about', { title: 'ABOUT' });
 });
 
-// redirects
-app.get('/about-me', (req, res) => {
-    // forces a new request towards the new page
-    res.redirect('/about');
+app.get('/blogs/create', (req, res) => {
+    res.render('create', { title: 'CREATE BLOG' });
 });
 
 // 404 page
@@ -47,5 +46,5 @@ app.use((req, res) => {
     res
         // manually set the status code
         .status(404)
-        .sendFile('./views/404.html', { root: __dirname});
+        .render('404', { title: '404' });
 });
