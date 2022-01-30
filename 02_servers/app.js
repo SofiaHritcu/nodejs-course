@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -8,17 +9,10 @@ app.set('view engine', 'ejs');
 // listen for requests
 app.listen(3000);
 
-// create a logger middleware
-app.use((req, res, next) => {
-    console.log('new request made:');
-    console.log('host: ', req.hostname);
-    console.log('path: ', req.path);
-    console.log('method: ', req.method);
-    // when express gets to this point, doesn t know where to go next
-    // it is not aware of the next middleware
-    // with the function next we are signaling htat we are not sending an answer in this middleware
-    next();
-});
+// middleware and static files
+app.use(express.static('public'));
+// pass in an option -> how the logging data is being formatted { dev, tiny etc }
+app.use(morgan('dev'));
 
 // respond to requests
 app.get('/', (req, res) => {
@@ -28,11 +22,6 @@ app.get('/', (req, res) => {
         {title: 'How to defeat bowser', snippet: 'Lorem ipsum dolor sit amet consectetur'},
     ];
     res.render('index', { title: 'HOME', blogs });
-});
-
-app.use((req, res, next) => {
-    console.log('in the next middlware');
-    next();
 });
 
 app.get('/blogs/create', (req, res) => {
