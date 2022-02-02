@@ -24,6 +24,10 @@ app.get('/', (req, res) => {
     res.render('index', { title: 'HOME', blogs });
 });
 
+app.get('/about', (req, res) => {
+    res.render('about', { title: 'ABOUT' });
+});
+
 app.get('/blogs/create', (req, res) => {
     res.render('create', { title: 'CREATE BLOG' });
 });
