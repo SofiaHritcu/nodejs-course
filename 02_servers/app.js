@@ -38,6 +38,10 @@ app.get('/about', (req, res) => {
 });
 
 // blog routes
+app.get('/blogs/create', (req, res) => {
+    res.render('create', { title: 'CREATE BLOG' });
+});
+
 app.get('/blogs', (req, res) => {
     Blog.find()
         .sort({ createdAt: -1 })
@@ -58,10 +62,32 @@ app.post('/blogs', (req, res) => {
         .catch((e) => {
             console.log(e);
         });
-;});
+});
 
-app.get('/blogs/create', (req, res) => {
-    res.render('create', { title: 'CREATE BLOG' });
+app.get('/blogs/:id', (req, res) => {
+    const id = req.params.id;
+    Blog.findById(id)
+        .then((result) => {
+            res.render('details', {blog: result, title: 'BLOG DETAILS'});
+        })
+        .catch((e) => {
+            console.log(e);
+        });
+});
+
+app.delete('/blogs/:id', (req, res) => {
+    const id = req.params.id;
+    Blog.findByIdAndDelete(id)
+        .then((result) => {
+            // when coming from an AJAX request
+            // in node we cannot just redirect
+            // we have to send back an answer -> JSON object
+            // the JSON object will have a redirect property
+            res.json({ redirect: '/blogs' });
+        })
+        .catch((e) => {
+            console.log(e);
+        });
 });
 
 app.use((req, res) => {
