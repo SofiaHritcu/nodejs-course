@@ -25,6 +25,9 @@ app.use(express.static('public'));
 // pass in an option -> how the logging data is being formatted { dev, tiny etc }
 app.use(morgan('dev'));
 
+// takes the url encoded data and it passes into an object in the request object
+app.use(express.urlencoded({extended: true}));
+
 // respond to requests
 app.get('/', (req, res) => {
     res.redirect('/blogs');
@@ -45,6 +48,17 @@ app.get('/blogs', (req, res) => {
             console.log(e);
         });
 });
+
+app.post('/blogs', (req, res) => {
+    const blog = new Blog(req.body);
+    blog.save()
+        .then(() => {
+            res.redirect('/blogs');
+        })
+        .catch((e) => {
+            console.log(e);
+        });
+;});
 
 app.get('/blogs/create', (req, res) => {
     res.render('create', { title: 'CREATE BLOG' });
